@@ -205,6 +205,10 @@ begin
 
   NewLeft := AIni.ReadInteger(AFramePrefix + 'VST', 'SplitterVST.Left_' + IntToStr(i), pnlSplitterVST.Left);
   ResizeFrameSectionsBySplitter(NewLeft);
+
+  Application.ProcessMessages;
+  NewLeft := pnlSplitterVST.Left;
+  ResizeFrameSectionsBySplitter(NewLeft);
 end;
 
 
@@ -249,14 +253,21 @@ begin
         end;
       end;
 
-      memL1.Clear;
-      memL2.Clear;
+      memL1.Lines.BeginUpdate;
+      memL2.Lines.BeginUpdate;
+      try
+        memL1.Clear;
+        memL2.Clear;
 
-      for i := 0 to L1Raw.Count - 1 do
-        memL1.Lines.Add(L1Raw.ValueFromIndex[i]);
+        for i := 0 to L1Raw.Count - 1 do
+          memL1.Lines.Add(L1Raw.ValueFromIndex[i]);
 
-      for i := 0 to L2Raw.Count - 1 do
-        memL2.Lines.Add(L2Raw.ValueFromIndex[i]);
+        for i := 0 to L2Raw.Count - 1 do
+          memL2.Lines.Add(L2Raw.ValueFromIndex[i]);
+      finally
+        memL1.Lines.EndUpdate;
+        memL2.Lines.EndUpdate;
+      end;
     finally
       L1.Free;
       L2.Free;
@@ -638,7 +649,7 @@ begin
   pnlL2.Width := pnlL1.Width;
   pnlL2.Left := pnlL1.Left + pnlL1.Width + 4;
 
-  vstDual.Width := pnlSplitterVST.Left;
+  vstDual.Width := pnlSplitterVST.Left - vstDual.Left;
 end;
 
 
